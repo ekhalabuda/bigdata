@@ -1,0 +1,32 @@
+[project]
+name = "stock-analysis"
+version = "0.1.0"
+description = "Stock analysis application with Kafka and Streamlit"
+requires-python = ">=3.9"
+dependencies = [
+    "streamlit",
+    "kafka-python",
+    "pandas",
+    "yfinance",
+    "scikit-learn",
+    "plotly",
+    "pre-commit",
+    "ruff",
+    "mypy",
+    "black",
+    "torch",
+]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = [
+    { index = "pytorch-cpu"},
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

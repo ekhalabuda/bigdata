@@ -1,0 +1,55 @@
+services:
+  kafka-raw:
+    image: apache/kafka:latest
+    ports:
+      - "9092:9092"  # Maps to Windows host
+    environment:
+      - KAFKA_NODE_ID=1
+      - KAFKA_PROCESS_ROLES=controller,broker
+      - KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      # For WSL2: use the Docker service name for internal communication
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka-raw:9092
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CONTROLLER_QUORUM_VOTERS=1@kafka-raw:9093,2@kafka-metrics:9093,3@kafka-predictions:9093
+      - CLUSTER_ID=5L6g3nShT-eMCtK--X86sw
+
+  kafka-metrics:
+    image: apache/kafka:latest
+    ports:
+      - "9094:9092"
+    environment:
+      - KAFKA_NODE_ID=2
+      - KAFKA_PROCESS_ROLES=controller,broker
+      - KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka-metrics:9092  # Changed from localhost
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CONTROLLER_QUORUM_VOTERS=1@kafka-raw:9093,2@kafka-metrics:9093,3@kafka-predictions:9093
+      - CLUSTER_ID=5L6g3nShT-eMCtK--X86sw
+
+  kafka-predictions:
+    image: apache/kafka:latest
+    ports:
+      - "9096:9092"
+    environment:
+      - KAFKA_NODE_ID=3
+      - KAFKA_PROCESS_ROLES=controller,broker
+      - KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka-predictions:9092  # Changed from localhost
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CONTROLLER_QUORUM_VOTERS=1@kafka-raw:9093,2@kafka-metrics:9093,3@kafka-predictions:9093
+      - CLUSTER_ID=5L6g3nShT-eMCtK--X86sw
+
+  streamlit-app:
+    build: .
+    ports:
+      - "8501:8501"  # This exposes Streamlit to Windows
+    depends_on:
+      - kafka-raw
+      - kafka-metrics
+      - kafka-predictions
+    # Add network configuration to ensure proper communication
+    extra_hosts:
+      - "host.docker.internal:host-gateway"  # Helps with WSL2 networking
