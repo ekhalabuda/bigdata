@@ -1,0 +1,312 @@
+[INFO] --- Шаг 1: Загрузка данных в HDFS ---
+[INFO] Копируем 2018_small.csv в контейнер namenode...
+Successfully copied 18.4MB to namenode:/
+[INFO] Проверяем/создаём директорию /data в HDFS...
+[INFO] Загружаем 2018_small.csv в /data/2018_small.csv HDFS (перезаписываем, если существует)...
+2026-04-07 16:50:30,528 INFO sasl.SaslDataTransferClient: SASL encryption trust check: localHostTrusted = false, remoteHostTrusted = false
+[INFO] Данные успешно загружены в HDFS.
+[INFO] --- Шаг 2: Подготовка Spark Master ---
+[INFO] Копируем app_spark.py в контейнер spark-master...
+Successfully copied 11.3kB to spark-master:/tmp/
+[INFO] Устанавливаем зависимости Python (psutil, numpy) в контейнере spark-master...
+fetch http://dl-cdn.alpinelinux.org/alpine/v3.10/main/x86_64/APKINDEX.tar.gz
+fetch http://dl-cdn.alpinelinux.org/alpine/v3.10/community/x86_64/APKINDEX.tar.gz
+v3.10.9-43-g3feb769ea3 [http://dl-cdn.alpinelinux.org/alpine/v3.10/main]
+v3.10.6-10-ged79a86de3 [http://dl-cdn.alpinelinux.org/alpine/v3.10/community]
+OK: 10364 distinct packages available
+fetch http://dl-cdn.alpinelinux.org/alpine/v3.10/main/x86_64/APKINDEX.tar.gz
+fetch http://dl-cdn.alpinelinux.org/alpine/v3.10/community/x86_64/APKINDEX.tar.gz
+(1/20) Upgrading musl (1.1.22-r3 -> 1.1.22-r4)
+(2/20) Installing perl (5.28.3-r0)
+(3/20) Installing automake (1.16.1-r0)
+(4/20) Installing binutils (2.32-r1)
+(5/20) Installing gmp (6.1.2-r1)
+(6/20) Installing isl (0.18-r0)
+(7/20) Installing libgomp (8.3.0-r0)
+(8/20) Installing libatomic (8.3.0-r0)
+(9/20) Installing mpfr3 (3.1.5-r1)
+(10/20) Installing mpc1 (1.1.0-r0)
+(11/20) Installing gcc (8.3.0-r0)
+(12/20) Installing musl-dev (1.1.22-r4)
+(13/20) Installing libc-dev (0.7.1-r0)
+(14/20) Installing g++ (8.3.0-r0)
+(15/20) Upgrading libc6-compat (1.1.22-r3 -> 1.1.22-r4)
+(16/20) Installing linux-headers (4.19.36-r0)
+(17/20) Installing make (4.2.1-r2)
+(18/20) Upgrading python3 (3.7.7-r1 -> 3.7.10-r0)
+(19/20) Installing pkgconf (1.6.1-r1)
+(20/20) Installing python3-dev (3.7.10-r0)
+Executing busybox-1.30.1-r3.trigger
+OK: 440 MiB in 86 packages
+Collecting psutil
+  Downloading psutil-7.2.2.tar.gz (493 kB)
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Installing backend dependencies: started
+  Installing backend dependencies: finished with status 'done'
+    Preparing wheel metadata: started
+    Preparing wheel metadata: finished with status 'done'
+Building wheels for collected packages: psutil
+  Building wheel for psutil (PEP 517): started
+  Building wheel for psutil (PEP 517): finished with status 'done'
+  Created wheel for psutil: filename=psutil-7.2.2-cp36-abi3-linux_x86_64.whl size=150004 sha256=fa86f44b930ad49098156117ac04325b9e5072eed296fd64f085346e35c41c1e
+  Stored in directory: /root/.cache/pip/wheels/81/64/10/0d6eb92d2fec73ed2af6e8579c1c0205fbce6676566cd996ca
+Successfully built psutil
+Installing collected packages: psutil
+Successfully installed psutil-7.2.2
+WARNING: You are using pip version 20.1.1; however, version 24.0 is available.
+You should consider upgrading via the '/usr/bin/python3.7 -m pip install --upgrade pip' command.
+Collecting numpy
+  Downloading numpy-1.21.6.zip (10.3 MB)
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+    Preparing wheel metadata: started
+    Preparing wheel metadata: finished with status 'done'
+Building wheels for collected packages: numpy
+  Building wheel for numpy (PEP 517): started
+  Building wheel for numpy (PEP 517): still running...
+  Building wheel for numpy (PEP 517): finished with status 'done'
+  Created wheel for numpy: filename=numpy-1.21.6-cp37-cp37m-linux_x86_64.whl size=16644140 sha256=2ca98e316bcf8d8a55c378babd3a3a3063e14e3c1de35a831cde260be5247c2f
+  Stored in directory: /root/.cache/pip/wheels/4e/7e/9e/0fde042ccff2493994076dac9c3fbd78feb444c3bd94eb386a
+Successfully built numpy
+Installing collected packages: numpy
+Successfully installed numpy-1.21.6
+WARNING: You are using pip version 20.1.1; however, version 24.0 is available.
+You should consider upgrading via the '/usr/bin/python3.7 -m pip install --upgrade pip' command.
+[INFO] Зависимости в spark-master установлены.
+[INFO] --- Шаг 3: Запуск Spark-приложений ---
+[INFO] Запускаем БАЗОВЫЙ вариант Spark-приложения...
+26/04/07 16:52:51 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+2026-04-07 16:52:51,907 INFO: Запуск приложения: AirlineDelaysAnalysisBase
+2026-04-07 16:52:51,908 INFO: Оптимизация включена: False
+Using Spark's default log4j profile: org/apache/spark/log4j-defaults.properties
+26/04/07 16:52:51 INFO SparkContext: Running Spark version 3.0.0
+26/04/07 16:52:52 INFO ResourceUtils: ==============================================================
+26/04/07 16:52:52 INFO ResourceUtils: Resources for spark.driver:
+
+26/04/07 16:52:52 INFO ResourceUtils: ==============================================================
+26/04/07 16:52:52 INFO SparkContext: Submitted application: AirlineDelaysAnalysisBase
+26/04/07 16:52:52 INFO SecurityManager: Changing view acls to: root
+26/04/07 16:52:52 INFO SecurityManager: Changing modify acls to: root
+26/04/07 16:52:52 INFO SecurityManager: Changing view acls groups to: 
+26/04/07 16:52:52 INFO SecurityManager: Changing modify acls groups to: 
+26/04/07 16:52:52 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users  with view permissions: Set(root); groups with view permissions: Set(); users  with modify permissions: Set(root); groups with modify permissions: Set()
+26/04/07 16:52:52 INFO Utils: Successfully started service 'sparkDriver' on port 39199.
+26/04/07 16:52:52 INFO SparkEnv: Registering MapOutputTracker
+26/04/07 16:52:52 INFO SparkEnv: Registering BlockManagerMaster
+26/04/07 16:52:52 INFO BlockManagerMasterEndpoint: Using org.apache.spark.storage.DefaultTopologyMapper for getting topology information
+26/04/07 16:52:52 INFO BlockManagerMasterEndpoint: BlockManagerMasterEndpoint up
+26/04/07 16:52:52 INFO SparkEnv: Registering BlockManagerMasterHeartbeat
+26/04/07 16:52:52 INFO DiskBlockManager: Created local directory at /tmp/blockmgr-0f721045-b983-4e53-a3f5-a7a13636cfd2
+26/04/07 16:52:52 INFO MemoryStore: MemoryStore started with capacity 366.3 MiB
+26/04/07 16:52:52 INFO SparkEnv: Registering OutputCommitCoordinator
+26/04/07 16:52:52 INFO Utils: Successfully started service 'SparkUI' on port 4040.
+26/04/07 16:52:52 INFO SparkUI: Bound SparkUI to 0.0.0.0, and started at http://976c00791d06:4040
+26/04/07 16:52:52 INFO StandaloneAppClient$ClientEndpoint: Connecting to master spark://spark-master:7077...
+26/04/07 16:52:52 INFO TransportClientFactory: Successfully created connection to spark-master/172.19.0.4:7077 after 22 ms (0 ms spent in bootstraps)
+26/04/07 16:52:53 INFO StandaloneSchedulerBackend: Connected to Spark cluster with app ID app-20260407165253-0000
+26/04/07 16:52:53 INFO Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 39087.
+26/04/07 16:52:53 INFO NettyBlockTransferService: Server created on 976c00791d06:39087
+26/04/07 16:52:53 INFO BlockManager: Using org.apache.spark.storage.RandomBlockReplicationPolicy for block replication policy
+26/04/07 16:52:53 INFO BlockManagerMaster: Registering BlockManager BlockManagerId(driver, 976c00791d06, 39087, None)
+26/04/07 16:52:53 INFO BlockManagerMasterEndpoint: Registering block manager 976c00791d06:39087 with 366.3 MiB RAM, BlockManagerId(driver, 976c00791d06, 39087, None)
+26/04/07 16:52:53 INFO BlockManagerMaster: Registered BlockManager BlockManagerId(driver, 976c00791d06, 39087, None)
+26/04/07 16:52:53 INFO BlockManager: Initialized BlockManager: BlockManagerId(driver, 976c00791d06, 39087, None)
+26/04/07 16:52:53 INFO StandaloneAppClient$ClientEndpoint: Executor added: app-20260407165253-0000/0 on worker-20260407165002-172.19.0.5-38193 (172.19.0.5:38193) with 12 core(s)
+26/04/07 16:52:53 INFO StandaloneSchedulerBackend: Granted executor ID app-20260407165253-0000/0 on hostPort 172.19.0.5:38193 with 12 core(s), 1536.0 MiB RAM
+26/04/07 16:52:53 INFO StandaloneSchedulerBackend: SchedulerBackend is ready for scheduling beginning after reached minRegisteredResourcesRatio: 0.0
+26/04/07 16:52:53 INFO StandaloneAppClient$ClientEndpoint: Executor updated: app-20260407165253-0000/0 is now RUNNING
+26/04/07 16:52:53 INFO SharedState: Setting hive.metastore.warehouse.dir ('null') to the value of spark.sql.warehouse.dir ('file:/spark-warehouse').
+26/04/07 16:52:53 INFO SharedState: Warehouse path is 'file:/spark-warehouse'.
+2026-04-07 16:52:53,855 INFO: SparkSession создана.
+2026-04-07 16:52:53,855 INFO: Загрузка данных из hdfs:///data/2018_small.csv...
+2026-04-07 16:52:59,118 INFO: Столбец 'Unnamed: 27' удален.
+2026-04-07 16:52:59,118 INFO: Данные успешно загружены.
+2026-04-07 16:52:59,567 INFO: Исходное количество строк: 150000
+2026-04-07 16:52:59,567 INFO: Начало предобработки данных (fillna, cast)...
+2026-04-07 16:52:59,901 INFO: Предобработка завершена.
+2026-04-07 16:52:59,901 INFO: Расчет топ-5 авиакомпаний по средней задержке прибытия...
++----------+------------------+
+|OP_CARRIER|     avg_arr_delay|
++----------+------------------+
+|        B6|41.130939648586704|
+|        F9|  20.7328461226147|
+|        G4|16.661971830985916|
+|        OO|16.048691723661918|
+|        OH|14.341565217391304|
++----------+------------------+
+only showing top 5 rows
+
+2026-04-07 16:53:01,122 INFO: Расчет завершен.
+2026-04-07 16:53:01,122 INFO: Расчет топ-5 аэропортов отправления по средней задержке вылета...
++------+------------------+
+|ORIGIN|     avg_dep_delay|
++------+------------------+
+|   PIB|          146.3125|
+|   MEI|137.70833333333334|
+|   EAU| 83.13333333333334|
+|   ELM|             82.25|
+|   ORH|             76.25|
++------+------------------+
+only showing top 5 rows
+
+2026-04-07 16:53:01,715 INFO: Расчет завершен.
+2026-04-07 16:53:01,715 INFO: Расчет средних значений по типам задержек...
++-----------------+------------------+-----------------+-------------------+-----------------------+
+|avg_CARRIER_DELAY| avg_WEATHER_DELAY|    avg_NAS_DELAY| avg_SECURITY_DELAY|avg_LATE_AIRCRAFT_DELAY|
++-----------------+------------------+-----------------+-------------------+-----------------------+
+|5.527046666666667|1.0283866666666666|2.552766666666667|0.03250666666666667|      6.411993333333333|
++-----------------+------------------+-----------------+-------------------+-----------------------+
+
+2026-04-07 16:53:02,021 INFO: Расчет завершен.
+2026-04-07 16:53:02,021 INFO: Подготовка признаков для ML...
+2026-04-07 16:53:03,215 INFO: Векторизация признаков завершена.
+2026-04-07 16:53:04,359 INFO: Данные разделены на обучение (120049 строк) и тест (29951 строк).
+2026-04-07 16:53:04,359 INFO: Начало обучения модели LinearRegression...
+2026-04-07 16:53:05,722 INFO: Модель обучена.
+2026-04-07 16:53:05,722 INFO: Получение предсказаний на тестовых данных...
++---------+-------------------+
+|ARR_DELAY|    predicted_delay|
++---------+-------------------+
+|    -32.0|-27.892454528241068|
+|    -14.0|-30.095354001345406|
+|    -37.0|-23.872058056767628|
+|    -14.0| -20.69996797903061|
+|      2.0|-20.163315420104873|
++---------+-------------------+
+only showing top 5 rows
+
+2026-04-07 16:53:06,053 INFO: Предсказания получены.
+2026-04-07 16:53:06,053 INFO: Оценка модели (RMSE)...
+2026-04-07 16:53:06,437 INFO: Root Mean Squared Error (RMSE) на тестовых данных: 15.695
+2026-04-07 16:53:06,437 INFO: ------------------------------
+2026-04-07 16:53:06,437 INFO: РЕЗУЛЬТАТЫ ПРОИЗВОДИТЕЛЬНОСТИ (БАЗОВО)
+2026-04-07 16:53:06,437 INFO: Общее время выполнения: 12.58 секунд
+2026-04-07 16:53:06,437 INFO: Пиковое использование памяти драйвером: 38.36 MB
+2026-04-07 16:53:06,437 INFO: ------------------------------
+2026-04-07 16:53:06,437 INFO: Завершение Spark-приложения...
+2026-04-07 16:53:06,849 INFO: Приложение завершено.
+[INFO] Базовый вариант завершен.
+[INFO] ---
+[INFO] Запускаем ОПТИМИЗИРОВАННЫЙ вариант Spark-приложения...
+26/04/07 16:53:08 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+2026-04-07 16:53:08,677 INFO: Запуск приложения: AirlineDelaysAnalysisOptimized
+2026-04-07 16:53:08,677 INFO: Оптимизация включена: True
+Using Spark's default log4j profile: org/apache/spark/log4j-defaults.properties
+26/04/07 16:53:08 INFO SparkContext: Running Spark version 3.0.0
+26/04/07 16:53:08 INFO ResourceUtils: ==============================================================
+26/04/07 16:53:08 INFO ResourceUtils: Resources for spark.driver:
+
+26/04/07 16:53:08 INFO ResourceUtils: ==============================================================
+26/04/07 16:53:08 INFO SparkContext: Submitted application: AirlineDelaysAnalysisOptimized
+26/04/07 16:53:08 INFO SecurityManager: Changing view acls to: root
+26/04/07 16:53:08 INFO SecurityManager: Changing modify acls to: root
+26/04/07 16:53:08 INFO SecurityManager: Changing view acls groups to: 
+26/04/07 16:53:08 INFO SecurityManager: Changing modify acls groups to: 
+26/04/07 16:53:08 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users  with view permissions: Set(root); groups with view permissions: Set(); users  with modify permissions: Set(root); groups with modify permissions: Set()
+26/04/07 16:53:08 INFO Utils: Successfully started service 'sparkDriver' on port 41881.
+26/04/07 16:53:08 INFO SparkEnv: Registering MapOutputTracker
+26/04/07 16:53:09 INFO SparkEnv: Registering BlockManagerMaster
+26/04/07 16:53:09 INFO BlockManagerMasterEndpoint: Using org.apache.spark.storage.DefaultTopologyMapper for getting topology information
+26/04/07 16:53:09 INFO BlockManagerMasterEndpoint: BlockManagerMasterEndpoint up
+26/04/07 16:53:09 INFO SparkEnv: Registering BlockManagerMasterHeartbeat
+26/04/07 16:53:09 INFO DiskBlockManager: Created local directory at /tmp/blockmgr-340797f3-5b59-463b-a9b1-2e77ec8ec5bb
+26/04/07 16:53:09 INFO MemoryStore: MemoryStore started with capacity 366.3 MiB
+26/04/07 16:53:09 INFO SparkEnv: Registering OutputCommitCoordinator
+26/04/07 16:53:09 INFO Utils: Successfully started service 'SparkUI' on port 4040.
+26/04/07 16:53:09 INFO SparkUI: Bound SparkUI to 0.0.0.0, and started at http://976c00791d06:4040
+26/04/07 16:53:09 INFO StandaloneAppClient$ClientEndpoint: Connecting to master spark://spark-master:7077...
+26/04/07 16:53:09 INFO TransportClientFactory: Successfully created connection to spark-master/172.19.0.4:7077 after 20 ms (0 ms spent in bootstraps)
+26/04/07 16:53:09 INFO StandaloneSchedulerBackend: Connected to Spark cluster with app ID app-20260407165309-0001
+26/04/07 16:53:09 INFO StandaloneAppClient$ClientEndpoint: Executor added: app-20260407165309-0001/0 on worker-20260407165002-172.19.0.5-38193 (172.19.0.5:38193) with 12 core(s)
+26/04/07 16:53:09 INFO StandaloneSchedulerBackend: Granted executor ID app-20260407165309-0001/0 on hostPort 172.19.0.5:38193 with 12 core(s), 1536.0 MiB RAM
+26/04/07 16:53:09 INFO Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 40327.
+26/04/07 16:53:09 INFO NettyBlockTransferService: Server created on 976c00791d06:40327
+26/04/07 16:53:09 INFO BlockManager: Using org.apache.spark.storage.RandomBlockReplicationPolicy for block replication policy
+26/04/07 16:53:09 INFO BlockManagerMaster: Registering BlockManager BlockManagerId(driver, 976c00791d06, 40327, None)
+26/04/07 16:53:09 INFO BlockManagerMasterEndpoint: Registering block manager 976c00791d06:40327 with 366.3 MiB RAM, BlockManagerId(driver, 976c00791d06, 40327, None)
+26/04/07 16:53:09 INFO BlockManagerMaster: Registered BlockManager BlockManagerId(driver, 976c00791d06, 40327, None)
+26/04/07 16:53:09 INFO BlockManager: Initialized BlockManager: BlockManagerId(driver, 976c00791d06, 40327, None)
+26/04/07 16:53:09 INFO StandaloneAppClient$ClientEndpoint: Executor updated: app-20260407165309-0001/0 is now RUNNING
+26/04/07 16:53:09 INFO StandaloneSchedulerBackend: SchedulerBackend is ready for scheduling beginning after reached minRegisteredResourcesRatio: 0.0
+26/04/07 16:53:09 INFO SharedState: Setting hive.metastore.warehouse.dir ('null') to the value of spark.sql.warehouse.dir ('file:/spark-warehouse').
+26/04/07 16:53:09 INFO SharedState: Warehouse path is 'file:/spark-warehouse'.
+2026-04-07 16:53:10,220 INFO: SparkSession создана.
+2026-04-07 16:53:10,220 INFO: Загрузка данных из hdfs:///data/2018_small.csv...
+2026-04-07 16:53:15,428 INFO: Столбец 'Unnamed: 27' удален.
+2026-04-07 16:53:15,428 INFO: Данные успешно загружены.
+2026-04-07 16:53:15,877 INFO: Исходное количество строк: 150000
+2026-04-07 16:53:15,877 INFO: Начало предобработки данных (fillna, cast)...
+2026-04-07 16:53:16,214 INFO: Предобработка завершена.
+2026-04-07 16:53:16,214 INFO: Расчет топ-5 авиакомпаний по средней задержке прибытия...
++----------+------------------+
+|OP_CARRIER|     avg_arr_delay|
++----------+------------------+
+|        B6|41.130939648586704|
+|        F9|  20.7328461226147|
+|        G4|16.661971830985916|
+|        OO|16.048691723661918|
+|        OH|14.341565217391304|
++----------+------------------+
+only showing top 5 rows
+
+2026-04-07 16:53:17,499 INFO: Расчет завершен.
+2026-04-07 16:53:17,499 INFO: Расчет топ-5 аэропортов отправления по средней задержке вылета...
++------+------------------+
+|ORIGIN|     avg_dep_delay|
++------+------------------+
+|   PIB|          146.3125|
+|   MEI|137.70833333333334|
+|   EAU| 83.13333333333334|
+|   ELM|             82.25|
+|   ORH|             76.25|
++------+------------------+
+only showing top 5 rows
+
+2026-04-07 16:53:18,106 INFO: Расчет завершен.
+2026-04-07 16:53:18,106 INFO: Расчет средних значений по типам задержек...
++-----------------+------------------+-----------------+-------------------+-----------------------+
+|avg_CARRIER_DELAY| avg_WEATHER_DELAY|    avg_NAS_DELAY| avg_SECURITY_DELAY|avg_LATE_AIRCRAFT_DELAY|
++-----------------+------------------+-----------------+-------------------+-----------------------+
+|5.527046666666667|1.0283866666666666|2.552766666666667|0.03250666666666667|      6.411993333333333|
++-----------------+------------------+-----------------+-------------------+-----------------------+
+
+2026-04-07 16:53:18,405 INFO: Расчет завершен.
+2026-04-07 16:53:18,405 INFO: Подготовка признаков для ML...
+2026-04-07 16:53:19,649 INFO: Векторизация признаков завершена.
+2026-04-07 16:53:20,679 INFO: Данные разделены на обучение (120049 строк) и тест (29951 строк).
+2026-04-07 16:53:20,679 INFO: Применение оптимизаций: repartition(8) и cache() для train/test данных...
+2026-04-07 16:53:21,764 INFO: Оптимизации применены.
+2026-04-07 16:53:21,764 INFO: Начало обучения модели LinearRegression...
+2026-04-07 16:53:22,473 INFO: Модель обучена.
+2026-04-07 16:53:22,473 INFO: Получение предсказаний на тестовых данных...
++---------+------------------+
+|ARR_DELAY|   predicted_delay|
++---------+------------------+
+|     10.0| 9.818110666655913|
+|     -8.0|-8.798911210289887|
+|    -11.0|-8.333351520569517|
+|    -16.0|-7.576564233898411|
+|     42.0|2.7968652670364387|
++---------+------------------+
+only showing top 5 rows
+
+2026-04-07 16:53:22,554 INFO: Предсказания получены.
+2026-04-07 16:53:22,554 INFO: Оценка модели (RMSE)...
+2026-04-07 16:53:22,661 INFO: Root Mean Squared Error (RMSE) на тестовых данных: 15.695
+2026-04-07 16:53:22,662 INFO: Очистка кэша train_data и test_data...
+2026-04-07 16:53:22,676 INFO: Кэш очищен.
+2026-04-07 16:53:22,676 INFO: ------------------------------
+2026-04-07 16:53:22,676 INFO: РЕЗУЛЬТАТЫ ПРОИЗВОДИТЕЛЬНОСТИ (ОПТИМИЗИРОВАНО)
+2026-04-07 16:53:22,676 INFO: Общее время выполнения: 12.46 секунд
+2026-04-07 16:53:22,676 INFO: Пиковое использование памяти драйвером: 38.25 MB
+2026-04-07 16:53:22,676 INFO: ------------------------------
+2026-04-07 16:53:22,676 INFO: Завершение Spark-приложения...
+2026-04-07 16:53:23,220 INFO: Приложение завершено.
+[INFO] Оптимизированный вариант завершен.
+[INFO] --- Все эксперименты завершены успешно! ---
+[INFO] Ищите результаты производительности (время, RAM) в логах выше.
