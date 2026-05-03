@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  mlflow:
+    image: python:3.9-slim
+    command: >
+      sh -c "pip install mlflow==2.9.2 &&
+             mkdir -p /mlflow &&
+             mlflow server --host 0.0.0.0 --port 5000 --backend-store-uri file:/mlflow"
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./mlflow_data:/mlflow
+
+  app:
+    build: .
+    depends_on:
+      - mlflow
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+      - MLFLOW_ALLOWED_HOSTS=*
+      - GIT_PYTHON_REFRESH=quiet
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    command: python main.py

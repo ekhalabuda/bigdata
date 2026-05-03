@@ -1,0 +1,66 @@
+2026-05-03 20:19:59,607 [INFO] matplotlib.font_manager: generated new fontManager
+2026-05-03 20:19:59,737 [INFO] pipeline: Starting Flight Lakehouse pipeline (variant 2)
+2026-05-03 20:19:59,740 [INFO] src.etl.bronze: Loading raw CSV into Bronze Delta table (daily append batches)
+2026-05-03 20:20:00,196 [INFO] src.etl.bronze: Found 31 daily partitions (first 5: ['2024-01-01', '2024-01-02', '2024-01-03', '2024-01-04', '2024-01-05'])
+2026-05-03 20:20:00,203 [INFO] src.etl.bronze: Writing batch 2024-01-01 (18338 rows)
+2026-05-03 20:20:00,387 [INFO] src.etl.bronze: Writing batch 2024-01-02 (20169 rows)
+2026-05-03 20:20:00,556 [INFO] src.etl.bronze: Writing batch 2024-01-03 (19693 rows)
+2026-05-03 20:20:00,717 [INFO] src.etl.bronze: Writing batch 2024-01-04 (19202 rows)
+2026-05-03 20:20:00,883 [INFO] src.etl.bronze: Writing batch 2024-01-05 (19251 rows)
+2026-05-03 20:20:00,168 [INFO] src.etl.bronze: Writing batch 2024-01-06 (18108 rows)
+2026-05-03 20:20:00,325 [INFO] src.etl.bronze: Writing batch 2024-01-07 (20021 rows)
+2026-05-03 20:20:00,486 [INFO] src.etl.bronze: Writing batch 2024-01-08 (19637 rows)
+2026-05-03 20:20:00,643 [INFO] src.etl.bronze: Writing batch 2024-01-09 (17822 rows)
+2026-05-03 20:20:00,789 [INFO] src.etl.bronze: Writing batch 2024-01-10 (17893 rows)
+2026-05-03 20:20:00,946 [INFO] src.etl.bronze: Writing batch 2024-01-11 (19709 rows)
+2026-05-03 20:20:01,115 [INFO] src.etl.bronze: Writing batch 2024-01-12 (19812 rows)
+2026-05-03 20:20:01,274 [INFO] src.etl.bronze: Writing batch 2024-01-13 (16501 rows)
+2026-05-03 20:20:01,415 [INFO] src.etl.bronze: Writing batch 2024-01-14 (18648 rows)
+2026-05-03 20:20:01,566 [INFO] src.etl.bronze: Writing batch 2024-01-15 (19804 rows)
+2026-05-03 20:20:01,725 [INFO] src.etl.bronze: Writing batch 2024-01-16 (17574 rows)
+2026-05-03 20:20:01,870 [INFO] src.etl.bronze: Writing batch 2024-01-17 (17973 rows)
+2026-05-03 20:20:02,030 [INFO] src.etl.bronze: Writing batch 2024-01-18 (19872 rows)
+2026-05-03 20:20:02,193 [INFO] src.etl.bronze: Writing batch 2024-01-19 (19912 rows)
+2026-05-03 20:20:02,359 [INFO] src.etl.bronze: Writing batch 2024-01-20 (16580 rows)
+2026-05-03 20:20:02,514 [INFO] src.etl.bronze: Writing batch 2024-01-21 (19750 rows)
+2026-05-03 20:20:02,692 [INFO] src.etl.bronze: Writing batch 2024-01-22 (19739 rows)
+2026-05-03 20:20:02,862 [INFO] src.etl.bronze: Writing batch 2024-01-23 (17516 rows)
+2026-05-03 20:20:03,022 [INFO] src.etl.bronze: Writing batch 2024-01-24 (17929 rows)
+2026-05-03 20:20:03,181 [INFO] src.etl.bronze: Writing batch 2024-01-25 (19891 rows)
+2026-05-03 20:20:03,358 [INFO] src.etl.bronze: Writing batch 2024-01-26 (19923 rows)
+2026-05-03 20:20:03,538 [INFO] src.etl.bronze: Writing batch 2024-01-27 (16591 rows)
+2026-05-03 20:20:03,696 [INFO] src.etl.bronze: Writing batch 2024-01-28 (19822 rows)
+2026-05-03 20:20:03,868 [INFO] src.etl.bronze: Writing batch 2024-01-29 (19563 rows)
+2026-05-03 20:20:04,038 [INFO] src.etl.bronze: Writing batch 2024-01-30 (17396 rows)
+2026-05-03 20:20:04,199 [INFO] src.etl.bronze: Writing batch 2024-01-31 (17786 rows)
+2026-05-03 20:20:04,358 [INFO] src.etl.bronze: Bronze table ready at /app/data/bronze
+2026-05-03 20:20:04,448 [INFO] src.etl.silver: Starting Silver transformation
+2026-05-03 20:20:04,502 [INFO] src.etl.silver: Silver plan:
+simple π 14/18 ["Year", "Month", "DayofMonth", ... 11 other columns]
+   WITH_COLUMNS:
+   [[(col("CRSDepTime")) floor_div (100)].alias("hour"), col("DayOfWeek").alias("day_of_week"), when(col("Month").is_between([3, 5])).then(String(spring)).otherwise(when(col("Month").is_between([6, 8])).then(String(summer)).otherwise(when(col("Month").is_between([9, 11])).then(String(fall)).otherwise(String(winter)))).alias("season"), col("Origin").str.concat_horizontal([String(-), col("Dest")]).alias("route")], [] 
+    FILTER [([([([([([(col("Cancelled")) == (0.0)]) & ([(col("Diverted")) == (0.0)])]) & (col("DepartureDelay").is_not_null())]) & (col("ArrivalDelay").is_not_null())]) & ([(col("DepartureDelay").abs()) <= (360.0)])]) & ([(col("ArrivalDelay").abs()) <= (360.0)])] FROM
+      RENAME
+
+          PYTHON SCAN 
+          PROJECT 14/120 COLUMNS
+2026-05-03 20:20:04,642 [INFO] src.etl.silver: Silver rows after cleaning: 555903
+2026-05-03 20:20:04,944 [INFO] src.etl.silver: Compacting Silver table...
+2026-05-03 20:20:04,948 [INFO] src.etl.silver: Applying Z-ORDER on Origin...
+2026-05-03 20:20:05,293 [INFO] src.etl.silver: Silver table saved to /app/data/silver
+2026-05-03 20:20:05,299 [INFO] src.etl.gold: Creating Gold layers from Silver
+2026-05-03 20:20:05,360 [INFO] src.etl.gold: Gold aggregations: 10791 rows
+2026-05-03 20:20:05,427 [INFO] src.etl.gold: Gold feature table: 555903 rows
+2026-05-03 20:20:05,603 [INFO] src.etl.gold: Running VACUUM (dry-run) on aggregations...
+2026-05-03 20:20:05,608 [INFO] src.etl.gold: Applying Z-ORDER on Airline for feature table...
+2026-05-03 20:20:05,886 [INFO] src.ml.model: Loading feature table for regression models
+2026-05-03 20:20:05,894 [WARNING] urllib3.connectionpool: Retrying (Retry(total=6, connect=6, read=7, redirect=7, status=7)) after connection broken by 'NewConnectionError("HTTPConnection(host='mlflow', port=5000): Failed to establish a new connection: [Errno 111] Connection refused")': /api/2.0/mlflow/experiments/get-by-name?experiment_name=FlightDelayRegression
+2026-05-03 20:20:10,078 [WARNING] urllib3.connectionpool: Retrying (Retry(total=5, connect=5, read=7, redirect=7, status=7)) after connection broken by 'NewConnectionError("HTTPConnection(host='mlflow', port=5000): Failed to establish a new connection: [Errno 111] Connection refused")': /api/2.0/mlflow/experiments/get-by-name?experiment_name=FlightDelayRegression
+2026-05-03 20:20:18,611 [WARNING] urllib3.connectionpool: Retrying (Retry(total=4, connect=4, read=7, redirect=7, status=7)) after connection broken by 'NewConnectionError("HTTPConnection(host='mlflow', port=5000): Failed to establish a new connection: [Errno 111] Connection refused")': /api/2.0/mlflow/experiments/get-by-name?experiment_name=FlightDelayRegression
+2026-05-03 20:20:34,048 [WARNING] urllib3.connectionpool: Retrying (Retry(total=3, connect=3, read=7, redirect=7, status=7)) after connection broken by 'NewConnectionError("HTTPConnection(host='mlflow', port=5000): Failed to establish a new connection: [Errno 111] Connection refused")': /api/2.0/mlflow/experiments/get-by-name?experiment_name=FlightDelayRegression
+2026-05-03 20:21:05,480 [WARNING] urllib3.connectionpool: Retrying (Retry(total=2, connect=2, read=7, redirect=7, status=7)) after connection broken by 'NewConnectionError("HTTPConnection(host='mlflow', port=5000): Failed to establish a new connection: [Errno 111] Connection refused")': /api/2.0/mlflow/experiments/get-by-name?experiment_name=FlightDelayRegression
+2026-05-03 20:21:05,633 [INFO] src.ml.model: Feature table shape: (555903, 10)
+2026-05-03 20:21:08,282 [INFO] src.ml.model: LinearRegression: MSE=247.188, R²=0.872
+2026-05-03 20:21:52,010 [INFO] src.ml.model: RandomForestRegressor: MSE=266.699, R²=0.862
+2026-05-03 20:21:52,024 [INFO] src.ml.model: All models trained and logged
+2026-05-03 20:21:52,370 [INFO] pipeline: Pipeline completed successfully
